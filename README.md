@@ -31,6 +31,8 @@ It will allow you to do things like the following:
 ```
 import utils
 
+#---
+
 # compute a waveform
 
 A = 1.0
@@ -42,8 +44,9 @@ tau = 1.0
 Npts = 1001
 
 t = np.linspace(-1, +1, Npts) * 3*tau
-
 h = utils.sine_gaussian(t, A, to, fo, phio, tau)
+
+#---
 
 # read data from an hdf file
 
