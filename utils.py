@@ -14,6 +14,80 @@ from matplotlib import pyplot as plt
 
 #-------------------------------------------------
 
+def tukey_window(N, alpha=0.5):
+    """
+    generate a tukey window
+
+    The Tukey window, also known as the tapered cosine window, can be regarded as a cosine lobe of width \alpha * N / 2 that is convolved with a rectangle window of width (1 - \alpha / 2). At \alpha = 1 it becomes rectangular, and at \alpha = 0 it becomes a Hann window.
+        """
+    # Special cases
+    if alpha <= 0:
+        return np.ones(N) #rectangular window
+    elif alpha >= 1:
+        return np.hanning(N)
+
+    # Normal case
+    x = np.linspace(0, 1, N)
+    w = np.ones(x.shape)
+
+    # first condition 0 <= x < alpha/2
+    first_condition = x<alpha/2
+    w[first_condition] = 0.5 * (1 + np.cos(2*np.pi/alpha * (x[first_condition] - alpha/2) ))
+
+    # second condition already taken care of
+
+    # third condition 1 - alpha / 2 <= x <= 1
+    third_condition = x>=(1 - alpha/2)
+    w[third_condition] = 0.5 * (1 + np.cos(2*np.pi/alpha * (x[third_condition] - 1 + alpha/2)))
+
+    return w
+
+#------------------------
+
+def dft(vec, dt=DEFAULT_DT):
+    """
+    computes the DFT of vec
+    returns the one-sides spectrum
+    """
+    N = len(vec)
+
+    dft_vec = np.fft.fft(vec)*dt    ### FIXME: change to np.fft.rfft?
+    freqs = np.fft.fftfreq(N, d=dt)
+
+    freqs = np.fft.fftshift(freqs)
+    truth = freqs>=0
+
+    return np.fft.fftshift(dft_vec)[truth], freqs[truth]
+
+def idft(dft_vec, dt=DEFAULT_DT):
+    """
+    computes the inverse DFT of vec
+    takes in the one-sided spectrum
+    """
+    N = len(dft_vec) ### if N is even, then n is even
+                     ### if N is odd, then n is odd
+
+    if N%2: ### if N is odd, n is odd
+        n = 2*N-1
+    else: ### if N is even, n is even
+        n = 2*N
+
+    seglen = n*dt ### length of time series
+
+    vec = np.empty((n,), complex)
+    vec[:N] = dft_vec
+    if n%2: ### odd number of points
+        vec[N:] = np.conjugate(dft_vec[1:])[::-1]
+    else: ### even number of points
+        vec[N:] = np.conjugate(dft_vec)[::-1]
+
+    vec = np.fft.ifft( vec ) / seglen
+    time = np.arange(0, seglen, dt)
+
+    return vec, time
+
+#-------------------------------------------------
+
 def load_data(path, verbose=False):
     """read time-series from hdf file
     """
@@ -86,7 +160,8 @@ def sine_gaussian_time_domain(t, A, to, fo, phio, tau):
 def sine_gaussian_freq_domain(f, A, to, fo, phio, tau):
     """fourier transform of the sine_gaussian
     """
-    return A * (np.pi/2)**0.5 * tau * np.exp(2j*np.pi*f*to) * (np.exp(-1j*phio - 2*np.pi**2*tau**2*(f+fo)**2) + np.exp(+1j*phio - 2*np.pi**2*tau**2*(f-fo)**2))
+    return A * (np.pi/2)**0.5 * tau * np.exp(2j*np.pi*f*to) \
+        * (np.exp(-1j*phio - 2*np.pi**2*tau**2*(f+fo)**2) + np.exp(+1j*phio - 2*np.pi**2*tau**2*(f-fo)**2))
 
 #-------------------------------------------------
 
