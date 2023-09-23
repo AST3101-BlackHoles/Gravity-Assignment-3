@@ -38,7 +38,7 @@ We assume that
 and only consider positive frequencies so that the Fourier-domain signal simplifies to
 
 ```math
-\tilde{h}(f) \approx A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o + i\phi_o - 2\pi^2\tau^2 (t-t_o)^2}
+\tilde{h}(f) \approx A e^{i\phi_o} \left[\sqrt{\frac{\pi}{2}} \tau e^{-2\pi i f t_o - 2\pi^2\tau^2 (t-t_o)^2}\right]
 ```
 
 Additionally, you can assume that 
