@@ -11,6 +11,12 @@
 There are snippets of simulated data for a hypothetical into which we will inject a few signals.
 Your job is to write a matched-filter search from scratch to detect these signals.
 
+The data is stored within an HDF file
+
+  * [assignment-3.hdf](assignment-3.hdf)
+
+---
+
 Write a matched filter search and use it to determine
 
   * the number of signals present
