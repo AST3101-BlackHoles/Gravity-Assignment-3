@@ -14,7 +14,7 @@ Your job is to write a matched-filter search from scratch to detect these signal
 Write a matched filter search and use it to determine
 
   * the number of signals present
-  * the statistical significance of each signal (i.e., a FAR)
+  * the statistical significance of each signal (i.e., a False Alarm Probability)
   * the physical amplitude, signal to noise ratio, and reference time for each detected signal
 
 Signals will be sine-Gaussians of the form
@@ -23,7 +23,33 @@ Signals will be sine-Gaussians of the form
 h(t) = A \cos(2\pi f_o (t-t_o) + \phi_o) \exp\left( -\frac{(t-t_o)^2}{2\tau^2} \right)
 ```
 
-Additionally, you can assume that the noise is stationary, Gaussian, and white.
+The Fourier Transform of this is
+
+```math
+\tilde{h}(f) = A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o} \left( e^{-i\phi_o - 2\pi^2\tau^2(f+f_o)^2} + e^{+i\phi_o - 2\pi^2\tau^2 (f-f_o)^2}\right)
+```
+
+We assume that
+
+```math
+2\pi \tau f_o = \frac{f}{\sigma_f} \gg 1
+```
+
+and only consider positive frequencies so that the Fourier-domain signal simplifies to
+
+```math
+\tilde{h}(f) \appro A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o + i\phi_o - 2\pi^2\tau^2 (t-t_o)^2}
+```
+
+Additionally, you can assume that 
+
+  * all signals have a known central frequency (`fo = 20.0 Hz`) and width (`tau = 2.0 sec`)
+  * the noise is stationary, Gaussian, and white.
+
+You should analytically maximize over `A` and `phi_o`.
+However, you will have to numerically maximize over `t_o`.
+
+---
 
 We have provided some basic Python code within this repository.
 It will allow you to do things like the following:
