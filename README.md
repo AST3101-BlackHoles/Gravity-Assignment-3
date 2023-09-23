@@ -61,18 +61,25 @@ import utils
 
 #---
 
-# compute a waveform
+# compute a waveform in the time domain
 
 A = 1.0
-fo = 10.0
+fo = 20.0
 to = 0.0
 phio = 0.0
-tau = 1.0
+tau = 2.0
 
 Npts = 1001
 
 t = np.linspace(-1, +1, Npts) * 3*tau
-h = utils.sine_gaussian(t, A, to, fo, phio, tau)
+h = utils.sine_gaussian_time_domain(t, A, to, fo, phio, tau)
+
+#---
+
+# compute a waveform in the frequency domain
+
+f = np.linspace(0, 256, 4096*512)
+H = utils.sine_gaussian_freq_domain(f, A, to, fo, phio, tau)
 
 #---
 
