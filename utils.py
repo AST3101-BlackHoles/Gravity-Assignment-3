@@ -76,10 +76,17 @@ def time_array(t0, dur, sample_rate, verbose=False):
 
 #-------------------------------------------------
 
-def sine_gaussian(t, A, to, fo, phio, tau):
+def sine_gaussian_time_domain(t, A, to, fo, phio, tau):
     """h(t) = A * cos(2*pi*fo*(t-to) + phio) * exp(-0.5*(t-to)**2/tau**2)
     """
     return A * np.cos(2*np.pi*fo*(t-to) + phio) * np.exp(-0.5*(t-to)**2/tau**2)
+
+#------------------------
+
+def sine_gaussian_freq_domain(f, A, to, fo, phio, tau):
+    """fourier transform of the sine_gaussian
+    """
+    return A * (np.pi/2)**0.5 * tau * np.exp(2j*np.pi*f*to) * (np.exp(-1j*phio - 2*np.pi**2*tau**2*(f+fo)**2) + np.exp(+1j*phio - 2*np.pi**2*tau**2*(f-fo)**2))
 
 #-------------------------------------------------
 
@@ -106,21 +113,29 @@ def draw_signals(
     """
     if verbose:
         print('drawing %d signals' % num)
-        print('    A ~ uniform(%.3f, %.3f)' % tuple(A))
-        print('    to ~ uniform(%.3f, %.3f)' % tuple(to))
-        print('    fo ~ uniform(%.3f, %.3f)' % tuple(fo))
-        print('    phio ~ uniform(%.3f, %.3f)' % tuple(phio))
-        print('    tau ~ uniform(%.3f, %.3f)' % tuple(tau))
 
     # make data structure
-    params = np.empty((num,), dtype=[('A', float), ('to', float), ('fo', float), ('phio', float), ('tau', float)])
+    params = np.empty(
+        (num,),
+        dtype=[('log10A', float), ('A', float), ('to', float), ('fo', float), ('phio', float), ('tau', float)],
+    )
 
     # draw parameters
-    params['A'] = A[0] + (A[1]-A[0])*np.random.random(size=num)
-    params['to'] = to[0] + (to[1]-to[0])*np.random.random(size=num)
-    params['fo'] = fo[0] + (fo[1]-fo[0])*np.random.random(size=num)
-    params['phio'] = phio[0] + (phio[1]-phio[0])*np.random.random(size=num)
-    params['tau'] = tau[0] + (tau[1]-tau[0])*np.random.random(size=num)
+    for name, vals in [('log10A', np.log10(A)), ('to', to), ('fo', fo), ('phio', phio), ('tau', tau)]:
+        if len(vals) == 1:
+            if verbose:
+                print('    %s = %.3f' % (name, vals[0]))
+            params[name] = vals[0]
+
+        elif len(vals) == 2:
+            if verbose:
+                print('    %s ~ uniform(%.3f, %.3f)' % (name, vals[0], vals[1]))
+            params[name] = vals[0] + (vals[1]-vals[0])*np.random.random(size=num)
+
+        else:
+            raise RuntimeError('prior for %s not understood : %s' % (name, vals))
+
+    params['A'] = 10**params['log10A']
 
     # return
     return params
@@ -147,7 +162,7 @@ stationary, white Gaussian noise described by sigma
 
     # iterate and add to data
     for ind in range(num):
-        data += sine_gaussian(
+        data += sine_gaussian_time_domain(
             t,
             params['A'][ind],
             params['to'][ind],
@@ -172,7 +187,7 @@ def plot_data(t, data, params):
 
     for ind in range(len(params)):
         sel = np.abs(t - params['to'][ind]) <= 6*params['tau'][ind]
-        h = sine_gaussian(
+        h = sine_gaussian_time_domain(
             t[sel],
             params['A'][ind],
             params['to'][ind],
