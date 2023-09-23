@@ -26,19 +26,19 @@ h(t) = A \cos(2\pi f_o (t-t_o) + \phi_o) \exp\left( -\frac{(t-t_o)^2}{2\tau^2} \
 The Fourier Transform of this is
 
 ```math
-\tilde{h}(f) = A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o} \left( e^{-i\phi_o - 2\pi^2\tau^2(f+f_o)^2} + e^{+i\phi_o - 2\pi^2\tau^2 (f-f_o)^2}\right)
+\tilde{h}(f) = A \sqrt{\frac{\pi}{2}} \tau e^{-2\pi i f t_o} \left( e^{-i\phi_o - 2\pi^2\tau^2(f+f_o)^2} + e^{+i\phi_o - 2\pi^2\tau^2 (f-f_o)^2}\right)
 ```
 
 We assume that
 
 ```math
-2\pi \tau f_o = \frac{f}{\sigma_f} \gg 1
+2\pi \tau f_o = \frac{f_o}{\sigma_f} \gg 1
 ```
 
 and only consider positive frequencies so that the Fourier-domain signal simplifies to
 
 ```math
-\tilde{h}(f) \appro A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o + i\phi_o - 2\pi^2\tau^2 (t-t_o)^2}
+\tilde{h}(f) \approx A \sqrt{\frac{pi}{2}} \tau e^{-2\pi i f t_o + i\phi_o - 2\pi^2\tau^2 (t-t_o)^2}
 ```
 
 Additionally, you can assume that 
