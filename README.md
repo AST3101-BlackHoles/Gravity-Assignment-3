@@ -43,7 +43,9 @@ and only consider positive frequencies so that the Fourier-domain signal simplif
 
 Additionally, you can assume that 
 
-  * all signals have a known central frequency (`fo = 20.0 Hz`) and width (`tau = 2.0 sec`)
+  * all signals have a known central frequency and width
+    - `fo = 20.0 Hz`
+    - `tau = 2.0 sec`
   * the noise is stationary, Gaussian, and white.
 
 You should analytically maximize over `A` and `phi_o`.
