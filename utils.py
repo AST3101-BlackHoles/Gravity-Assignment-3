@@ -51,38 +51,18 @@ def dft(vec, dt):
     """
     N = len(vec)
 
-    dft_vec = np.fft.fft(vec)*dt    ### FIXME: change to np.fft.rfft?
-    freqs = np.fft.fftfreq(N, d=dt)
+    dft_vec = np.fft.rfft(vec)*dt
+    freqs = np.fft.rfftfreq(N, d=dt)
 
-    freqs = np.fft.fftshift(freqs)
-    truth = freqs>=0
-
-    return np.fft.fftshift(dft_vec)[truth], freqs[truth]
+    return dft_vec, freqs
 
 def idft(dft_vec, dt):
     """
     computes the inverse DFT of vec
     takes in the one-sided spectrum
     """
-    N = len(dft_vec) ### if N is even, then n is even
-                     ### if N is odd, then n is odd
-
-    if N%2: ### if N is odd, n is odd
-        n = 2*N-1
-    else: ### if N is even, n is even
-        n = 2*N
-
-    seglen = n*dt ### length of time series
-
-    vec = np.empty((n,), complex)
-    vec[:N] = dft_vec
-    if n%2: ### odd number of points
-        vec[N:] = np.conjugate(dft_vec[1:])[::-1]
-    else: ### even number of points
-        vec[N:] = np.conjugate(dft_vec)[::-1]
-
-    vec = np.fft.ifft( vec ) / dt # undo the multiplicative factor added in dft(vec, dt)
-    time = np.arange(0, seglen, dt)
+    vec = np.fft.irfft(dft_vec) / dt # undo the multiplicative factor added in dft(vec, dt)
+    time = np.arange(0, len(vec))*dt
 
     return vec, time
 
@@ -251,7 +231,7 @@ stationary, white Gaussian noise described by sigma
 
 #------------------------
 
-def plot_data(t, data, params, color='k', fig=None):
+def plot_data(t, data, params, color='k', alpha=0.50, ylabel='$h$', fig=None):
     """make a time-domain plot of the data with the location of signals overlaid
     """
 
@@ -261,7 +241,7 @@ def plot_data(t, data, params, color='k', fig=None):
     else:
         ax = fig.gca()
 
-    ax.plot(t, data, color=color, alpha=0.25)
+    ax.plot(t, data, color=color, alpha=alpha)
 
     for ind in range(len(params)):
         sel = np.abs(t - params['to'][ind]) <= 6*params['tau'][ind]
@@ -273,10 +253,10 @@ def plot_data(t, data, params, color='k', fig=None):
             params['phio'][ind],
             params['tau'][ind],
         )
-        ax.plot(t[sel], h, alpha=0.75)
+        ax.plot(t[sel], h, alpha=alpha)
 
     ax.set_xlabel('$t$')
-    ax.set_ylabel('$h$')
+    ax.set_ylabel(ylabel)
 
     ax.tick_params(
         left=True,
@@ -295,6 +275,6 @@ def plot_data(t, data, params, color='k', fig=None):
 
 def savefig(path, fig, verbose=False):
     if verbose:
-        print('saving: '+path)
+        print('    saving: '+path)
     fig.savefig(path)
     plt.close(fig)
