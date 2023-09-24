@@ -79,5 +79,5 @@ Note that the right-hand-side looks like a Fourier transform.
 Similarly,
 
 ```math
-\mathcal{I}\left{x\right} = \mathcal{R}\{-i x\}
+\mathcal{I}\{ x \} = \mathcal{R}\{-i x\}
 ```
