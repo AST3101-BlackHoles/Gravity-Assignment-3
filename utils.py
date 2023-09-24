@@ -160,7 +160,7 @@ def sine_gaussian_time_domain(t, A, to, fo, phio, tau):
 def sine_gaussian_freq_domain(f, A, to, fo, phio, tau):
     """fourier transform of the sine_gaussian
     """
-    return A * (np.pi/2)**0.5 * tau * np.exp(2j*np.pi*f*to) \
+    return A * (np.pi/2)**0.5 * tau * np.exp(-2j*np.pi*f*to) \
         * (np.exp(-1j*phio - 2*np.pi**2*tau**2*(f+fo)**2) + np.exp(+1j*phio - 2*np.pi**2*tau**2*(f-fo)**2))
 
 #-------------------------------------------------
