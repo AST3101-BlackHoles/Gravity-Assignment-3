@@ -81,7 +81,7 @@ def idft(dft_vec, dt):
     else: ### even number of points
         vec[N:] = np.conjugate(dft_vec)[::-1]
 
-    vec = np.fft.ifft( vec ) / seglen
+    vec = np.fft.ifft( vec ) / dt # undo the multiplicative factor added in dft(vec, dt)
     time = np.arange(0, seglen, dt)
 
     return vec, time
