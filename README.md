@@ -78,6 +78,6 @@ Note that the right-hand-side looks like a Fourier transform.
 
 Similarly,
 
-```mathrm
+```math
 \mathcal{I}\left{x\right} = \mathcal{R}\{-i x\}
 ```
