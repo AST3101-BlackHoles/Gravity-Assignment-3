@@ -251,14 +251,17 @@ stationary, white Gaussian noise described by sigma
 
 #------------------------
 
-def plot_data(t, data, params):
+def plot_data(t, data, params, color='k', fig=None):
     """make a time-domain plot of the data with the location of signals overlaid
     """
 
-    fig = plt.figure(figsize=(10,2))
-    ax = fig.add_axes([0.08, 0.20, 0.90, 0.78])
+    if fig is None:
+        fig = plt.figure(figsize=(10,2))
+        ax = fig.add_axes([0.08, 0.20, 0.90, 0.78])
+    else:
+        ax = fig.gca()
 
-    ax.plot(t, data, color='k', alpha=0.25)
+    ax.plot(t, data, color=color, alpha=0.25)
 
     for ind in range(len(params)):
         sel = np.abs(t - params['to'][ind]) <= 6*params['tau'][ind]
