@@ -44,7 +44,7 @@ def tukey_window(N, alpha=0.5):
 
 #------------------------
 
-def dft(vec, dt=DEFAULT_DT):
+def dft(vec, dt):
     """
     computes the DFT of vec
     returns the one-sides spectrum
@@ -59,7 +59,7 @@ def dft(vec, dt=DEFAULT_DT):
 
     return np.fft.fftshift(dft_vec)[truth], freqs[truth]
 
-def idft(dft_vec, dt=DEFAULT_DT):
+def idft(dft_vec, dt):
     """
     computes the inverse DFT of vec
     takes in the one-sided spectrum
