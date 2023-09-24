@@ -20,8 +20,8 @@ The data is stored within an HDF file
 Write a matched filter search and use it to determine
 
   * the number of signals present
-  * the statistical significance of each signal (i.e., a False Alarm Probability)
-  * the physical amplitude, signal to noise ratio, and reference time for each detected signal
+  * a reference time for each detected signal
+  * the statistical significance of each signal (i.e., a False Alarm Rate or Probability)
 
 Signals will be sine-Gaussians of the form
 
@@ -59,37 +59,5 @@ However, you will have to numerically maximize over `t_o`.
 
 ---
 
-We have provided some basic Python code within this repository.
-It will allow you to do things like the following:
-
-```
-import utils
-
-#---
-
-# compute a waveform in the time domain
-
-A = 1.0
-fo = 20.0
-to = 0.0
-phio = 0.0
-tau = 2.0
-
-Npts = 1001
-
-t = np.linspace(-1, +1, Npts) * 3*tau
-h = utils.sine_gaussian_time_domain(t, A, to, fo, phio, tau)
-
-#---
-
-# compute a waveform in the frequency domain
-
-f = np.linspace(0, 256, 4096*512)
-H = utils.sine_gaussian_freq_domain(f, A, to, fo, phio, tau)
-
-#---
-
-# read data from an hdf file
-
-t, h = utils.load_data('assignment-3.hdf')
-```
+We have provided some basic Python code within this repository as a module ([utils.py](utils.py)) and an initial search script ([search](search)).
+You should modify [search](search) as necessary to get the search running.

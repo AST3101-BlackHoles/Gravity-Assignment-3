@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+
+"""a very simple matched-filter search for sine-Gaussian signals in stationary white noise
+"""
+
+#-------------------------------------------------
+
+import os
+import sys
+
+import utils
+np = utils.np
+
+from argparse import ArgumentParser
+
+#-------------------------------------------------
+
+def filter_freq_domain(data_fd, template_fd, dt, snr_thr=0.0, verbose=False):
+    """perform filtering in frequency domain. return a set of peaks (with snr > snr_thr) and snr time-series
+    """
+    if verbose:
+        print('computing complex filter response as a function of time via FFT')
+
+    # this can be computed via an DFT
+
+    raise NotImplementedError('''\
+compute real and imag filter responses via DFT
+
+    snrtd_real = ???
+    snrtd_imag = ???
+''')
+
+    # take the absolute magnitude
+    snrtd = (snrtd_real**2 + snrtd_imag**2)**0.5
+
+    #---
+
+    # identify peaks
+    if verbose:
+        print('identifying triggers (local maxima in SNR time-series)')
+
+    raise NotImplementedError('''\
+write a basic peak-finding algorithm
+''')
+
+    if verbose:
+        print('estimating properties of each trigger')
+
+    raise NotImplementedError('''\
+estimate the properites of each peak
+    params = ???
+    ''')
+
+    # return
+    return snrtd, snrtd_real, snrtd_imag, params
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('data', type=str)
+
+parser.add_argument('--fo', default=20.0, type=float)
+parser.add_argument('--tau', default=2.0, type=float)
+
+parser.add_argument('--tukey-alpha', default=0.25, type=float)
+
+parser.add_argument('--snr-thr', default=1.0, type=float)
+parser.add_argument('--num-noise-realizations', default=1000, type=int,
+    help='the number of noise realizations used to estimate background')
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+parser.add_argument('-V', '--Verbose', default=False, action='store_true')
+
+parser.add_argument('--plot-peaks', default=False, action='store_true')
+parser.add_argument('--plot-noise-realizations', default=False, action='store_true')
+
+args = parser.parse_args()
+
+args.verbose |= args.Verbose
+
+#-------------------------------------------------
+
+# load time-series data from disk
+time, data = utils.load_data(args.data, verbose=args.verbose)
+
+#------------------------
+
+if args.verbose:
+    print('estimating time-domain noise properties assuming stationary, white Gaussian noise')
+
+sigmatd = np.std(data) ### assumes stationary, white Gaussian noise
+                       ### us this to estimate statistical significance by generating more noise
+
+#------------------------
+
+# figure out relevant parameters for FFT and transform the data
+
+Nsmp = len(time)
+
+dt = time[1]-time[0]
+duration = dt*Nsmp
+
+# now compute the windowing function
+
+if args.verbose:
+    print('computing Tukey window function with alpha=%.3f' % args.tukey_alpha)
+
+window = utils.tukey_window(Nsmp, alpha=args.tukey_alpha)
+
+# compute Fourier Transform of data
+
+if args.verbose:
+    print('computing FFT of windowed data')
+
+dfd, freq = utils.dft(data*window, dt)
+
+#------------------------
+
+# generate a freq-domain waveform with the known parameters: (fo, tau)
+if args.verbose:
+    print('generating template with fo=%.3f and tau=%.3f' % (args.fo, args.tau))
+
+raise NotImplementedError('''\
+call utils.sine_gaussian_freq_domain to generate a template
+
+hfd = ???
+''')
+
+#------------------------
+
+# compute SNR time series
+snrtd, snrtd_real, snrtd_imag, params = filter_freq_domain(
+    dfd,
+    hfd,
+    dt,
+    snr_thr=args.snr_thr,
+    verbose=args.verbose,
+)
+
+#-----------
+
+# estimate statistical significance of each trigger
+if args.verbose:
+    print('estimating statistical significance of each trigger using %d noise realizations' \
+        % args.num_noise_realizations)
+
+snrs = []
+for ind in range(args.num_noise_realizations):
+    if args.Verbose:
+        sys.stdout.write('\r    processing noise realization: %3d / %3d' % (ind, args.num_noise_realizations))
+        sys.stdout.flush()
+
+    raise NotImplementedError('''\
+generate a new noise realization with the same properites as the data via utils.draw_noise
+
+    noise = ???
+''')
+
+    noise_snrtd, noise_snrtd_real, noise_snrtd_imag, noise_params = filter_freq_domain(
+        utils.dft(noise*window, dt)[0],
+        hfd,
+        dt,
+        snr_thr=args.snr_thr,
+    )
+    snrs += list(noise_params['A'])
+
+if args.Verbose:
+    sys.stdout.write('\n')
+    sys.stdout.flush()
+
+if args.verbose:
+    print('estimating background from %d peaks detected in %d noise realizations' \
+        % (len(snrs), args.num_noise_realizations))
+
+raise NotImplementedError('''\
+estimate the rate at which we observe signals with SNRs at least as large as a given value from the background noise
+interpolate this relation to assign a FAR to each trigger from the real data
+
+snrs = ???
+FAR = ???
+''')
+
+# now, assign FARs to real signals
+params['FAR'] = np.interp(params['A'], snrs, FAR)
+
+#------------------------
+
+# write params of identified triggers to disk
+
+utils.write_params(
+    os.path.basename(__file__)+'-triggers.hdf',
+    params,
+    verbose=args.verbose,
+)
