@@ -71,7 +71,7 @@ x(f) = x^\ast(-f)
 then
 
 ```math
-2\mathcal{R}\left\{\int\limits_0^{+\infty} df\, e^{-2\pi f t} x(f) \right} = \int\limits_{-\infty}^{+\infty} df\, e^{-2\pi f t} x(f)
+2\mathcal{R}\left\{\int\limits_0^{+\infty} df\, e^{-2\pi f t} x(f) \right\} = \int\limits_{-\infty}^{+\infty} df\, e^{-2\pi f t} x(f)
 ```
 
 Note that the right-hand-side looks like a Fourier transform.
