@@ -61,3 +61,23 @@ However, you will have to numerically maximize over `t_o`.
 
 We have provided some basic Python code within this repository as a module ([utils.py](utils.py)) and an initial search script ([search](search)).
 You should modify [search](search) as necessary to get the search running.
+
+It may be helpful to note that if
+
+```math
+x(f) = x^\ast(-f)
+```
+
+then
+
+```math
+2\mathcal{R}\left\{\int\limits_0^{+\infty} df\, e^{-2\pi f t} x(f) \right} = \int\limits_{-\infty}^{+\infty} df\, e^{-2\pi f t} x(f)
+```
+
+Note that the right-hand-side looks like a Fourier transform.
+
+Similarly,
+
+```mathrm
+\mathcal{I}\left{x\right} = \mathcal{R}\{-i x\}
+```
