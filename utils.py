@@ -237,7 +237,7 @@ def plot_data(t, data, params, color='k', alpha=0.50, ylabel='$h$', fig=None):
 
     if fig is None:
         fig = plt.figure(figsize=(10,2))
-        ax = fig.add_axes([0.05, 0.20, 0.93, 0.78])
+        ax = fig.add_axes([0.08, 0.20, 0.90, 0.78])
     else:
         ax = fig.gca()
 
